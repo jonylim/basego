@@ -1,0 +1,16 @@
+### Go ###
+# Binaries for programs and plugins
+/basego-api
+/basego-api.exe
+
+# Configs
+.env
+
+# Test binary, build with `go test -c`
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+
+### Go Patch ###
+/vendor/
+/Godeps/
+/.vscode/

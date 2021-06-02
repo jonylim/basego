@@ -1,0 +1,25 @@
+[Unit]
+Description=BaseGo API
+ConditionPathExists=/opt/basego/basego-api/basego-api
+After=network.target
+
+[Service]
+Type=simple
+User=basego
+Group=basego
+
+Restart=on-failure
+RestartSec=3
+WorkingDirectory=/opt/basego/basego-api
+ExecStart=/opt/basego/basego-api/basego-api
+
+PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -p /var/log/basego-api
+ExecStartPre=/bin/chown syslog:adm /var/log/basego-api
+ExecStartPre=/bin/chmod 755 /var/log/basego-api
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=basego-api
+
+[Install]
+WantedBy=multi-user.target

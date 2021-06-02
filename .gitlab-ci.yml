@@ -1,0 +1,55 @@
+# This file is a template, and might need editing before it works on your project.
+image: golang:1.12.5
+
+variables:
+  # Please edit to your GitLab project
+  REPO_NAME: github.com/jonylim/basego
+  BINARY_CUSTOMER: basego-api
+
+# This folder is cached between builds
+# http://docs.gitlab.com/ce/ci/yaml/README.html#cache
+# cache:
+#   paths:
+#   - vendor/
+
+# The problem is that to be able to use go get, one needs to put
+# the repository in the $GOPATH. So for example if your gitlab domain
+# is gitlab.com, and that your repository is namespace/project, and
+# the default GOPATH being /go, then you'd need to have your
+# repository in /go/src/gitlab.com/namespace/project
+# Thus, making a symbolic link corrects this.
+before_script:
+  - hostname
+  - mkdir -p $GOPATH/src/$(dirname $REPO_NAME)
+  - ln -svf $CI_PROJECT_DIR $GOPATH/src/$REPO_NAME
+  - cd $GOPATH/src/$REPO_NAME
+  - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+  - dep version
+  - dep ensure
+
+stages:
+  - test
+  - build
+
+format:
+  stage: test
+  tags: [ golang, testing ]
+  script:
+    - go fmt $(go list ./... | grep -v /vendor/)
+    - go vet $(go list ./... | grep -v /vendor/)
+    - go test $(go list ./... | grep -v /vendor/)
+    - go test -race $(go list ./... | grep -v /vendor/)
+  only:
+    - merge_requests
+    - develop
+    - staging
+
+compile:
+  stage: build
+  tags: [ golang, testing ]
+  script:
+    - go build -ldflags "-extldflags '-static'" -o $BINARY_CUSTOMER ./cmd/cstd/main.go
+  only:
+    - merge_requests
+    - develop
+    - staging
