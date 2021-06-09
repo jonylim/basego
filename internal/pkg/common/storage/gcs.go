@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -11,7 +12,6 @@ import (
 	"github.com/jonylim/basego/internal/pkg/common/logger"
 
 	"cloud.google.com/go/storage"
-	context "golang.org/x/net/context"
 )
 
 // GoogleCloudStorageConfig defines configurations for using Google Cloud Storage.
